@@ -10,8 +10,17 @@ export function InputBar({
   onSubmit: () => void;
 }) {
   return (
-    <div className="card">
-      <p className="section-title">Command Surface</p>
+    <div className="card command-card">
+      <div className="command-toolbar">
+        <div>
+          <p className="section-title">Command Surface</p>
+          <div className="text-sm muted">
+            Ask directly, shape a plan, inspect context, or route toward a
+            specialist agent.
+          </div>
+        </div>
+        <span className="pill">Single turn orchestration</span>
+      </div>
       <div className="row" style={{ alignItems: "stretch" }}>
         <input
           className="command-input"
@@ -31,7 +40,7 @@ export function InputBar({
           disabled={disabled}
           onClick={onSubmit}
         >
-          Send
+          {disabled ? "Working" : "Send"}
         </button>
       </div>
     </div>

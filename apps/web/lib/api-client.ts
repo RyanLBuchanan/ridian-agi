@@ -14,5 +14,21 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
     throw new Error("Chat request failed");
   }
 
-  return (await response.json()) as ChatResponse;
+  const payload = (await response.json()) as Partial<ChatResponse>;
+
+  if (typeof payload.response !== "string") {
+    throw new Error("Chat response payload is invalid");
+  }
+
+  return {
+    response: payload.response,
+    runId: typeof payload.runId === "string" ? payload.runId : undefined,
+    executionMode: payload.executionMode,
+    selectedAgent: payload.selectedAgent ?? null,
+    traceSummary:
+      typeof payload.traceSummary === "string"
+        ? payload.traceSummary
+        : undefined,
+    trace: Array.isArray(payload.trace) ? payload.trace : [],
+  };
 }

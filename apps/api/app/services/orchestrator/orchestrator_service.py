@@ -2,7 +2,7 @@ import logging
 
 from app.domain.schemas.chat import ChatRequest, ChatResponse, ExecutionMode
 from app.services.agents.registry import AgentRegistry, AgentSelection
-from app.services.memory.memory_service import MemoryProvider
+from app.services.memory.memory_service import DisciplinedMemoryService
 from app.services.model_router.router import ModelRouter
 from app.services.orchestrator.execution_runtime import ExecutionRuntime
 from app.services.orchestrator.task_planner import TaskPlanner
@@ -22,10 +22,11 @@ class Orchestrator:
     1. create a run trace
     2. check permissions
     3. decide execution mode
-    4. gather memory/retrieval/tool/agent context as needed
-    5. route the model request
-    6. verify the result
-    7. assemble a stable API response
+    4. consult the agent registry for the best-fit agent profile
+    5. gather memory/retrieval/tool context as needed
+    6. route the model request
+    7. verify the result
+    8. assemble a stable API response
     """
 
     def __init__(self) -> None:
@@ -36,7 +37,7 @@ class Orchestrator:
         self.planner = TaskPlanner()
         self.runtime = ExecutionRuntime()
         self.model_router = ModelRouter()
-        self.memory = MemoryProvider()
+        self.memory = DisciplinedMemoryService()
         self.retrieval = RetrievalProvider()
         self.tools = ToolRegistry()
         self.agents = AgentRegistry()
@@ -61,6 +62,9 @@ class Orchestrator:
         execution_mode = self._select_execution_mode(request.message)
         self.trace_logger.add_step(trace, "execution_mode_selected", execution_mode)
 
+        consulted_agent = self.agents.select_for_message(request.message, execution_mode)
+        self.trace_logger.add_step(trace, "agent_consulted", consulted_agent.name)
+
         plan = self.planner.make_plan(request.message, execution_mode)
         self.trace_logger.add_step(trace, "plan_built", self.runtime.summarize(plan.steps))
 
@@ -69,7 +73,7 @@ class Orchestrator:
 
         retrieval_hits = self._retrieve_if_needed(request.message, execution_mode, trace)
         tool_candidates = self._consider_tools_if_needed(request.message, execution_mode, trace)
-        agent_selection = self._select_agent_if_needed(request.message, execution_mode, trace)
+        agent_selection = self._select_agent_for_execution(consulted_agent, execution_mode, trace)
 
         prompt = self._build_prompt(
             user_message=request.message,
@@ -91,8 +95,13 @@ class Orchestrator:
 
         # TODO: Add a second-pass verifier for tool-backed or high-impact responses.
 
-        self.memory.remember(key="last_user_message", value=request.message)
-        self.trace_logger.add_step(trace, "memory_updated", "last_user_message")
+        memory_write = self.memory.remember_episode(
+            task_id=trace.run_id,
+            key="user_request",
+            content=f"User asked: {request.message}",
+            summary="Latest user request for this orchestration run.",
+        )
+        self.trace_logger.add_step(trace, "memory_updated", memory_write.reason)
 
         logger.info(
             "orchestration_complete run_id=%s mode=%s selected_agent=%s verified=%s",
@@ -142,25 +151,43 @@ class Orchestrator:
     ) -> list[ToolCandidate]:
         if execution_mode != "tool_consideration":
             return []
-        candidates = self.tools.consider(user_message)
-        self.trace_logger.add_step(trace, "tools_considered", f"count={len(candidates)}")
+        candidates = self.tools.consider(
+            user_message,
+            self.permissions,
+            actor="orchestrator",
+            run_id=trace.run_id,
+        )
+        allowed_count = sum(1 for candidate in candidates if candidate.allowed)
+        self.trace_logger.add_step(
+            trace,
+            "tools_considered",
+            f"count={len(candidates)} allowed={allowed_count}",
+        )
         return candidates
 
-    def _select_agent_if_needed(
+    def _select_agent_for_execution(
         self,
-        user_message: str,
+        consulted_agent: AgentSelection,
         execution_mode: ExecutionMode,
         trace: TaskTrace,
     ) -> AgentSelection | None:
-        if execution_mode != "delegated_agent":
+        if execution_mode == "direct_response":
+            return consulted_agent
+
+        if execution_mode not in {
+            "delegated_agent",
+            "retrieval_assisted",
+            "tool_consideration",
+            "verify_before_return",
+        }:
             return None
-        selection = self.agents.select_for_message(user_message)
+
         self.trace_logger.add_step(
             trace,
             "agent_selected",
-            selection.name if selection else "none",
+            consulted_agent.name,
         )
-        return selection
+        return consulted_agent
 
     def _build_prompt(
         self,
@@ -174,12 +201,21 @@ class Orchestrator:
         # TODO: Move to prompt templates with stronger system role instructions.
         # TODO: Split user-facing prompting from internal orchestration annotations.
         retrieval_text = "\n".join(hit.content for hit in retrieval_hits) if retrieval_hits else "No retrieved context."
-        tool_text = ", ".join(candidate.name for candidate in tool_candidates) if tool_candidates else "No tools considered."
+        tool_text = (
+            ", ".join(
+                f"{candidate.name}[{'allowed' if candidate.allowed else candidate.decision_reason}]"
+                for candidate in tool_candidates
+            )
+            if tool_candidates
+            else "No tools considered."
+        )
         agent_text = agent_selection.name if agent_selection else "No delegated agent."
         return (
             "You are Little Ridian AGI, a calm and practical workspace intelligence assistant.\n"
             f"Execution mode: {execution_mode}.\n"
             f"Selected specialist agent: {agent_text}.\n"
+            f"Agent purpose: {agent_selection.purpose if agent_selection else 'General workspace interaction.'}.\n"
+            f"Agent response style: {agent_selection.response_style if agent_selection else 'Calm and clear.'}.\n"
             f"Memory hits: {memory_count}.\n"
             f"Retrieved context:\n{retrieval_text}\n"
             f"Tool consideration: {tool_text}.\n"
