@@ -1,40 +1,72 @@
-export function AgentActivityPanel() {
+import type { ChatExecutionMode, ChatResponse } from "@/lib/types";
+
+function formatExecutionMode(mode: ChatExecutionMode | undefined): string {
+  if (!mode) {
+    return "Awaiting run";
+  }
+
+  return mode
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function AgentActivityPanel({
+  latestRun,
+}: {
+  latestRun: ChatResponse | null;
+}) {
   return (
     <section className="card panel-shell">
       <div className="panel-header">
         <div>
-          <p className="section-title">Trace / Activity</p>
+          <p className="section-title">Run Context</p>
           <p className="panel-copy text-sm muted">
-            Agent consultation, selected execution mode, and trace activity will
-            settle here as a more legible operational timeline.
+            The context rail keeps the latest run legible during a demo without
+            competing with the main conversation.
           </p>
         </div>
         <span className="pill">Observed</span>
       </div>
-      <ul className="panel-list">
-        <li className="panel-item">
-          <div className="text-sm">Current Execution Mode</div>
-          <div className="text-xs muted">
-            Displayed from the latest orchestrator response.
+      <div className="context-kpi-grid">
+        <div className="context-kpi-card">
+          <span className="run-kpi-label">Execution Mode</span>
+          <span className="run-kpi-value">
+            {formatExecutionMode(latestRun?.executionMode)}
+          </span>
+        </div>
+        <div className="context-kpi-card">
+          <span className="run-kpi-label">Selected Agent</span>
+          <span className="run-kpi-value">
+            {latestRun?.selectedAgent ?? "Awaiting route"}
+          </span>
+        </div>
+        <div className="context-kpi-card">
+          <span className="run-kpi-label">Run ID</span>
+          <span className="run-kpi-value">{latestRun?.runId ?? "Pending"}</span>
+        </div>
+      </div>
+      <div className="panel-note premium-note">
+        {latestRun?.traceSummary
+          ? latestRun.traceSummary
+          : "Trace summary will appear after the first successful run."}
+      </div>
+      <div className="meta-card">
+        <p className="section-title">Trace / Activity</p>
+        {latestRun?.trace && latestRun.trace.length > 0 ? (
+          <ul className="trace-list compact-trace-list">
+            {latestRun.trace.slice(0, 5).map((item) => (
+              <li key={item} className="trace-item text-xs muted">
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="panel-note">
+            Live streaming activity remains placeholder. The current demo shows
+            the latest recorded trace steps only when the backend returns them.
           </div>
-        </li>
-        <li className="panel-item">
-          <div className="text-sm">Selected Agent</div>
-          <div className="text-xs muted">
-            Shows which agent profile shaped the latest response.
-          </div>
-        </li>
-        <li className="panel-item">
-          <div className="text-sm">Run Trace</div>
-          <div className="text-xs muted">
-            A compact activity summary with room for richer step-by-step
-            inspection later.
-          </div>
-        </li>
-      </ul>
-      <div className="panel-note">
-        Placeholder state: live streaming activity and expanded trace history
-        can be added later.
+        )}
       </div>
     </section>
   );

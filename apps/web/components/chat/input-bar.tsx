@@ -3,11 +3,13 @@ export function InputBar({
   disabled,
   onChange,
   onSubmit,
+  suggestions,
 }: {
   value: string;
   disabled: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
+  suggestions: string[];
 }) {
   return (
     <div className="card command-card">
@@ -16,10 +18,10 @@ export function InputBar({
           <p className="section-title">Command Surface</p>
           <div className="text-sm muted">
             Ask directly, shape a plan, inspect context, or route toward a
-            specialist agent.
+            specialist agent without leaving the orchestration console.
           </div>
         </div>
-        <span className="pill">Single turn orchestration</span>
+        <span className="pill">Single-turn demo flow</span>
       </div>
       <div className="row" style={{ alignItems: "stretch" }}>
         <input
@@ -42,6 +44,19 @@ export function InputBar({
         >
           {disabled ? "Working" : "Send"}
         </button>
+      </div>
+      <div className="suggestion-row">
+        {suggestions.map((suggestion) => (
+          <button
+            key={suggestion}
+            type="button"
+            className="suggestion-chip"
+            disabled={disabled}
+            onClick={() => onChange(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
       </div>
     </div>
   );

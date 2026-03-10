@@ -14,6 +14,21 @@ export type ChatExecutionMode =
   | "delegated_agent"
   | "verify_before_return";
 
+export type ChatPlanStepStatus = "next" | "ready" | "later";
+
+export type ChatPlanStep = {
+  title: string;
+  detail: string;
+  status: ChatPlanStepStatus;
+};
+
+export type ChatPlan = {
+  title?: string;
+  summary?: string;
+  steps: string[];
+  structuredSteps?: ChatPlanStep[];
+};
+
 export type ChatResponse = {
   response: string;
   runId?: string;
@@ -21,4 +36,5 @@ export type ChatResponse = {
   selectedAgent?: string | null;
   traceSummary?: string;
   trace?: string[];
+  plan?: ChatPlan | null;
 };

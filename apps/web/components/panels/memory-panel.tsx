@@ -5,8 +5,8 @@ export function MemoryPanel() {
         <div>
           <p className="section-title">Memory</p>
           <p className="panel-copy text-sm muted">
-            Session, project, preference, and episode memory will be surfaced
-            here as the memory layer becomes queryable.
+            Session, project, preference, and episode memory are framed here so
+            the demo suggests where retrieval-backed state will surface next.
           </p>
         </div>
         <span className="pill">Disciplined</span>
@@ -33,7 +33,8 @@ export function MemoryPanel() {
         </li>
       </ul>
       <div className="panel-note">
-        Placeholder state: retrieval-backed memory cards will appear here next.
+        Placeholder state: retrieval-backed memory cards are not rendered yet,
+        but the backend memory discipline and write policy are already real.
       </div>
     </section>
   );

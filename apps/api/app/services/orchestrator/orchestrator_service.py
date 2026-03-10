@@ -1,6 +1,7 @@
 import logging
 
 from app.domain.schemas.chat import ChatRequest, ChatResponse, ExecutionMode
+from app.domain.schemas.task import TaskPlan
 from app.services.agents.registry import AgentRegistry, AgentSelection
 from app.services.memory.memory_service import DisciplinedMemoryService
 from app.services.model_router.router import ModelRouter
@@ -65,7 +66,11 @@ class Orchestrator:
         consulted_agent = self.agents.select_for_message(request.message, execution_mode)
         self.trace_logger.add_step(trace, "agent_consulted", consulted_agent.name)
 
-        plan = self.planner.make_plan(request.message, execution_mode)
+        plan = self.planner.make_plan(
+            request.message,
+            execution_mode,
+            selected_agent_key=consulted_agent.key,
+        )
         self.trace_logger.add_step(trace, "plan_built", self.runtime.summarize(plan.steps))
 
         related_memory = self.memory.recall(request.message)
@@ -93,6 +98,10 @@ class Orchestrator:
         verification = self.verifier.verify_response(model_result.text)
         self.trace_logger.add_step(trace, "response_verified", verification.status)
 
+        visible_plan = self._select_visible_plan(plan, agent_selection)
+        if visible_plan is not None:
+            self.trace_logger.add_step(trace, "builder_plan_prepared", f"steps={len(visible_plan.structured_steps)}")
+
         # TODO: Add a second-pass verifier for tool-backed or high-impact responses.
 
         memory_write = self.memory.remember_episode(
@@ -112,9 +121,16 @@ class Orchestrator:
         )
         return self._build_response(
             trace=trace,
-            response_text=verification.final_text,
+            response_text=self._compose_response_text(
+                user_message=request.message,
+                verified_text=verification.final_text,
+                execution_mode=execution_mode,
+                agent_selection=agent_selection,
+                plan=visible_plan,
+            ),
             execution_mode=execution_mode,
             selected_agent=agent_selection.name if agent_selection else None,
+            plan=visible_plan,
         )
 
     def _select_execution_mode(self, user_message: str) -> ExecutionMode:
@@ -123,7 +139,10 @@ class Orchestrator:
         normalized = user_message.lower()
         if self.verifier.should_verify(user_message):
             return "verify_before_return"
-        if any(keyword in normalized for keyword in ["delegate", "agent", "research", "build", "implement"]):
+        if any(
+            keyword in normalized
+            for keyword in ["delegate", "agent", "research", "build", "builder", "implement", "plan", "scaffold", "create"]
+        ):
             return "delegated_agent"
         if any(keyword in normalized for keyword in ["tool", "run", "execute", "command"]):
             return "tool_consideration"
@@ -217,11 +236,65 @@ class Orchestrator:
             f"Agent purpose: {agent_selection.purpose if agent_selection else 'General workspace interaction.'}.\n"
             f"Agent response style: {agent_selection.response_style if agent_selection else 'Calm and clear.'}.\n"
             f"Memory hits: {memory_count}.\n"
+            f"Plan posture: {self._plan_prompt_summary(agent_selection)}.\n"
             f"Retrieved context:\n{retrieval_text}\n"
             f"Tool consideration: {tool_text}.\n"
             "User message:\n"
             f"{user_message}"
         )
+
+    def _select_visible_plan(
+        self,
+        plan: TaskPlan,
+        agent_selection: AgentSelection | None,
+    ) -> TaskPlan | None:
+        if agent_selection is None or agent_selection.key != "builder_agent":
+            return None
+
+        if not plan.structured_steps:
+            return None
+
+        return plan
+
+    def _compose_response_text(
+        self,
+        user_message: str,
+        verified_text: str,
+        execution_mode: ExecutionMode,
+        agent_selection: AgentSelection | None,
+        plan: TaskPlan | None,
+    ) -> str:
+        if agent_selection is None or agent_selection.key != "builder_agent" or plan is None:
+            return verified_text
+
+        lines = [
+            "Builder Agent engaged.",
+            "",
+            f"Execution mode: {execution_mode.replace('_', ' ')}.",
+            plan.summary or "A small implementation plan is ready.",
+            "",
+            "Recommended build sequence:",
+        ]
+
+        for index, step in enumerate(plan.structured_steps, start=1):
+            lines.append(f"{index}. {step.title} - {step.detail}")
+
+        if verified_text and "no external model provider is configured yet" not in verified_text.lower():
+            lines.extend(["", f"Working note: {verified_text}"])
+        else:
+            lines.extend(
+                [
+                    "",
+                    f"Working note: The request is framed as a builder-style task for: {user_message.strip()}",
+                ]
+            )
+
+        return "\n".join(lines)
+
+    def _plan_prompt_summary(self, agent_selection: AgentSelection | None) -> str:
+        if agent_selection is not None and agent_selection.key == "builder_agent":
+            return "Prefer a planning-oriented answer with a small implementation sequence"
+        return "No explicit planning overlay requested"
 
     def _build_response(
         self,
@@ -229,6 +302,7 @@ class Orchestrator:
         response_text: str,
         execution_mode: ExecutionMode,
         selected_agent: str | None,
+        plan: TaskPlan | None = None,
     ) -> ChatResponse:
         """Assemble the stable backend chat contract returned by the route."""
 
@@ -239,6 +313,7 @@ class Orchestrator:
             selected_agent=selected_agent,
             trace_summary=self.trace_logger.summarize(trace),
             trace=self.trace_logger.public_steps(trace),
+            plan=plan,
         )
 
 

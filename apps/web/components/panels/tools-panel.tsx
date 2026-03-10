@@ -6,8 +6,8 @@ export function ToolsPanel() {
           <p className="section-title">Tools</p>
           <p className="panel-copy text-sm muted">
             Tool access is governed by the safety wall. This panel is
-            intentionally informative rather than action-heavy in the current
-            phase.
+            intentionally informative in the current phase so the demo shows
+            governed capability without pretending to be fully interactive.
           </p>
         </div>
         <span className="pill">Governed</span>
@@ -32,7 +32,8 @@ export function ToolsPanel() {
       </ul>
       <div className="panel-note">
         Placeholder state: a later pass can show live tool decisions and
-        approval posture per run.
+        approval posture per run. The registry and permission wall behind this
+        panel are already implemented.
       </div>
     </section>
   );

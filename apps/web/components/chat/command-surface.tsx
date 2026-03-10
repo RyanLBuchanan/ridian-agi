@@ -9,8 +9,14 @@ import type { ChatExecutionMode, ChatMessage, ChatResponse } from "@/lib/types";
 const starterMessage: ChatMessage = {
   role: "assistant",
   content:
-    "I am ready to help with planning, memory, and execution tasks in your workspace.",
+    "Console ready. I can help frame a plan, inspect workspace context, route toward a specialist agent, and narrate the execution posture of each run.",
 };
+
+const starterPrompts = [
+  "Map the current workspace architecture and call out the strongest demo points.",
+  "Plan the next implementation pass and show the execution posture you would use.",
+  "Summarize what is real versus placeholder in Little Ridian AGI today.",
+];
 
 function formatExecutionMode(mode: ChatExecutionMode | undefined): string {
   if (!mode) {
@@ -23,13 +29,16 @@ function formatExecutionMode(mode: ChatExecutionMode | undefined): string {
     .join(" ");
 }
 
-export function CommandSurface() {
+export function CommandSurface({
+  latestRun,
+  onRunUpdate,
+}: {
+  latestRun: ChatResponse | null;
+  onRunUpdate: (response: ChatResponse | null) => void;
+}) {
   const [messages, setMessages] = useState<ChatMessage[]>([starterMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [lastResponseMeta, setLastResponseMeta] = useState<ChatResponse | null>(
-    null,
-  );
 
   const submit = async () => {
     const trimmed = input.trim();
@@ -46,13 +55,13 @@ export function CommandSurface() {
 
     try {
       const response = await sendChat({ message: trimmed });
-      setLastResponseMeta(response);
+      onRunUpdate(response);
       setMessages((prev: ChatMessage[]) => [
         ...prev,
         { role: "assistant", content: response.response },
       ]);
     } catch {
-      setLastResponseMeta(null);
+      onRunUpdate(null);
       setMessages((prev: ChatMessage[]) => [
         ...prev,
         {
@@ -68,55 +77,124 @@ export function CommandSurface() {
 
   return (
     <div className="conversation-shell">
+      <section className="card orchestration-console">
+        <div className="console-header">
+          <div>
+            <p className="section-title">Orchestration Console</p>
+            <h3 className="console-title">
+              Direct the workspace, then inspect how the system chose to
+              respond.
+            </h3>
+            <p className="console-copy">
+              The central surface keeps the conversation primary while exposing
+              the live execution posture, selected agent, and trace framing that
+              make the demo feel operational rather than chat-only.
+            </p>
+          </div>
+          <div className="console-badges">
+            <span className="status-pill">
+              <span className="status-dot" />
+              Traced response path
+            </span>
+            <span className="status-pill">Warm, restrained UI</span>
+          </div>
+        </div>
+        <div className="console-stats">
+          <div className="console-stat-card">
+            <span className="stat-label">Execution Mode</span>
+            <span className="console-stat-value">
+              {formatExecutionMode(latestRun?.executionMode)}
+            </span>
+          </div>
+          <div className="console-stat-card">
+            <span className="stat-label">Selected Agent</span>
+            <span className="console-stat-value">
+              {latestRun?.selectedAgent ?? "Ready to route"}
+            </span>
+          </div>
+          <div className="console-stat-card">
+            <span className="stat-label">Run Summary</span>
+            <span className="console-stat-value console-stat-copy">
+              {latestRun?.traceSummary ??
+                "First run will surface orchestration notes here."}
+            </span>
+          </div>
+        </div>
+      </section>
       <MessageList messages={messages} />
       <InputBar
         value={input}
         disabled={isLoading}
         onChange={setInput}
         onSubmit={submit}
+        suggestions={starterPrompts}
       />
-      {lastResponseMeta ? (
-        <div className="card meta-grid">
+      {latestRun ? (
+        <div className="card meta-grid premium-meta-grid">
           <div className="panel-header">
             <div>
-              <p className="section-title">Current Run</p>
+              <p className="section-title">Run Deck</p>
               <p className="panel-copy text-sm muted">
-                The latest orchestration response exposes its current execution
-                posture without interrupting the conversation.
+                The latest orchestration response is summarized here so a demo
+                audience can understand the system state at a glance.
               </p>
             </div>
             <span className="pill">
-              Mode: {formatExecutionMode(lastResponseMeta.executionMode)}
+              Mode: {formatExecutionMode(latestRun.executionMode)}
             </span>
           </div>
-          <div className="meta-list">
-            {lastResponseMeta.runId ? (
-              <span className="pill">Run: {lastResponseMeta.runId}</span>
-            ) : null}
-            {lastResponseMeta.executionMode ? (
-              <span className="pill">
-                Execution: {formatExecutionMode(lastResponseMeta.executionMode)}
+          <div className="run-kpi-grid">
+            <div className="run-kpi-card">
+              <span className="run-kpi-label">Run ID</span>
+              <span className="run-kpi-value">
+                {latestRun.runId ?? "Pending"}
               </span>
-            ) : null}
-            {lastResponseMeta.selectedAgent ? (
-              <span className="pill">
-                Agent: {lastResponseMeta.selectedAgent}
+            </div>
+            <div className="run-kpi-card">
+              <span className="run-kpi-label">Execution</span>
+              <span className="run-kpi-value">
+                {formatExecutionMode(latestRun.executionMode)}
               </span>
-            ) : null}
-            {!lastResponseMeta.runId ? (
-              <span className="pill">Run ID pending</span>
-            ) : null}
+            </div>
+            <div className="run-kpi-card">
+              <span className="run-kpi-label">Agent</span>
+              <span className="run-kpi-value">
+                {latestRun.selectedAgent ?? "Not surfaced"}
+              </span>
+            </div>
           </div>
-          <div className="panel-note">
-            {lastResponseMeta.traceSummary
-              ? lastResponseMeta.traceSummary
+          {latestRun.plan?.structuredSteps &&
+          latestRun.plan.structuredSteps.length > 0 ? (
+            <div className="meta-card builder-plan-preview">
+              <p className="section-title">Builder Plan</p>
+              <div className="panel-note premium-note">
+                {latestRun.plan.summary ??
+                  "A planning sequence is attached to this run."}
+              </div>
+              <ul className="trace-list compact-trace-list">
+                {latestRun.plan.structuredSteps
+                  .slice(0, 3)
+                  .map((step, index) => (
+                    <li
+                      key={`${step.title}-${index}`}
+                      className="trace-item text-xs muted"
+                    >
+                      {index + 1}. {step.title}: {step.detail}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ) : null}
+          <div className="panel-note premium-note">
+            {latestRun.traceSummary
+              ? latestRun.traceSummary
               : "Trace metadata is not available for this response yet."}
           </div>
           <div className="meta-card">
             <p className="section-title">Trace / Activity</p>
-            {lastResponseMeta.trace && lastResponseMeta.trace.length > 0 ? (
+            {latestRun.trace && latestRun.trace.length > 0 ? (
               <ul className="trace-list">
-                {lastResponseMeta.trace.slice(0, 5).map((item: string) => (
+                {latestRun.trace.slice(0, 5).map((item: string) => (
                   <li key={item} className="trace-item text-xs muted">
                     {item}
                   </li>
@@ -131,10 +209,24 @@ export function CommandSurface() {
           </div>
         </div>
       ) : (
-        <div className="panel-note">
-          No run has been executed yet. The first response will populate
-          execution mode, selected agent, run ID, and trace activity here.
-        </div>
+        <section className="card preflight-card">
+          <div className="panel-header">
+            <div>
+              <p className="section-title">Demo Preflight</p>
+              <p className="panel-copy text-sm muted">
+                The first command will activate the run deck, context rail, and
+                trace summary so the workspace reads like an orchestrated
+                system.
+              </p>
+            </div>
+            <span className="pill">Ready</span>
+          </div>
+          <div className="meta-list">
+            <span className="pill">Run ID pending</span>
+            <span className="pill">Execution mode pending</span>
+            <span className="pill">Agent selection pending</span>
+          </div>
+        </section>
       )}
     </div>
   );

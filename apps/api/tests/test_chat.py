@@ -14,3 +14,17 @@ def test_chat_placeholder() -> None:
     assert "executionMode" in payload
     assert "traceSummary" in payload
     assert isinstance(payload.get("trace"), list)
+
+
+def test_chat_builder_plan() -> None:
+    response = client.post(
+        "/api/chat",
+        json={"message": "Plan and build a first demo-ready dashboard experience."},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["selectedAgent"] == "Builder Agent"
+    assert payload["executionMode"] == "delegated_agent"
+    assert isinstance(payload.get("plan"), dict)
+    assert payload["plan"]["title"] == "Builder planning pass"
+    assert len(payload["plan"]["structuredSteps"]) >= 3

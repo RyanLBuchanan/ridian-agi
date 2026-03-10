@@ -30,5 +30,37 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
         ? payload.traceSummary
         : undefined,
     trace: Array.isArray(payload.trace) ? payload.trace : [],
+    plan:
+      payload.plan && typeof payload.plan === "object"
+        ? {
+            title:
+              typeof payload.plan.title === "string"
+                ? payload.plan.title
+                : undefined,
+            summary:
+              typeof payload.plan.summary === "string"
+                ? payload.plan.summary
+                : undefined,
+            steps: Array.isArray(payload.plan.steps) ? payload.plan.steps : [],
+            structuredSteps: Array.isArray(payload.plan.structuredSteps)
+              ? payload.plan.structuredSteps.filter(
+                  (
+                    step,
+                  ): step is {
+                    title: string;
+                    detail: string;
+                    status: "next" | "ready" | "later";
+                  } =>
+                    Boolean(step) &&
+                    typeof step === "object" &&
+                    typeof step.title === "string" &&
+                    typeof step.detail === "string" &&
+                    (step.status === "next" ||
+                      step.status === "ready" ||
+                      step.status === "later"),
+                )
+              : [],
+          }
+        : null,
   };
 }

@@ -151,6 +151,21 @@ body {
   gap: 14px;
 }
 
+.intro-highlights {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.highlight-chip {
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--accent-deep);
+  background: rgba(255, 249, 240, 0.85);
+  border: 1px solid rgba(138, 97, 60, 0.18);
+}
+
 .intro-card {
   display: grid;
   gap: 12px;
@@ -314,6 +329,74 @@ body {
   gap: 14px;
 }
 
+.orchestration-console {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 252, 247, 0.96),
+      rgba(245, 236, 223, 0.92)
+    ),
+    var(--surface-strong);
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.console-title {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--text-strong);
+}
+
+.console-copy {
+  margin: 10px 0 0;
+  max-width: 64ch;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.console-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.console-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.console-stat-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--line);
+}
+
+.console-stat-value {
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-strong);
+}
+
+.console-stat-copy {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .conversation-list {
   min-height: 280px;
   display: grid;
@@ -352,6 +435,28 @@ body {
 .command-card {
   display: grid;
   gap: 14px;
+}
+
+.suggestion-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.suggestion-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: rgba(255, 252, 247, 0.9);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion-chip:disabled {
+  cursor: default;
+  opacity: 0.68;
 }
 
 .command-toolbar {
@@ -406,6 +511,10 @@ body {
 .meta-grid {
   display: grid;
   gap: 12px;
+}
+
+.premium-meta-grid {
+  gap: 16px;
 }
 
 .meta-card {
@@ -464,6 +573,107 @@ body {
   color: var(--text-muted);
 }
 
+.premium-note {
+  background: linear-gradient(
+    180deg,
+    rgba(245, 236, 223, 0.76),
+    rgba(255, 249, 241, 0.88)
+  );
+}
+
+.builder-plan-preview {
+  gap: 12px;
+}
+
+.run-kpi-grid,
+.context-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.run-kpi-card,
+.context-kpi-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid var(--line);
+}
+
+.run-kpi-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.run-kpi-value {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--text-strong);
+}
+
+.preflight-card {
+  display: grid;
+  gap: 14px;
+}
+
+.context-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.compact-trace-list {
+  gap: 6px;
+}
+
+.plan-list {
+  gap: 10px;
+}
+
+.plan-item {
+  gap: 8px;
+}
+
+.plan-item-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.plan-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.plan-status.next {
+  color: var(--accent-deep);
+  background: rgba(138, 97, 60, 0.12);
+}
+
+.plan-status.ready {
+  color: var(--success);
+  background: rgba(79, 113, 94, 0.12);
+}
+
+.plan-status.later {
+  color: var(--warning);
+  background: rgba(154, 114, 80, 0.12);
+}
+
 @media (max-width: 1120px) {
   .app-shell {
     grid-template-columns: 220px 1fr;
@@ -475,11 +685,17 @@ body {
   }
 
   .right {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: auto;
   }
 
   .shell-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .console-stats,
+  .run-kpi-grid,
+  .context-kpi-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -507,5 +723,9 @@ body {
 
   .header-actions {
     justify-content: flex-start;
+  }
+
+  .console-header {
+    flex-direction: column;
   }
 }
