@@ -1,4 +1,4 @@
-# Little Ridian AGI
+# Ridian Cortex
 
 Little Ridian AGI is the next evolution of Ridian OS: a workspace-native cognitive layer designed to be calm, trustworthy, and extensible.
 
