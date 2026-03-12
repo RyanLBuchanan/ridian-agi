@@ -46,7 +46,7 @@ export function SystemSidebar({
         <h2 className="cortex-sidebar-title">Console Rail</h2>
         <p className="cortex-sidebar-copy">
           Persistent navigation for the cognitive console. The rail stays stable
-          while the command surface and inspector update per run.
+          while the command surface and inspector update per run on Ridian OS.
         </p>
       </div>
 

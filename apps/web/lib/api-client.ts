@@ -1,23 +1,76 @@
 import type { ChatRequest, ChatResponse } from "@/lib/types";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+const LOCAL_API_BASE_URL = "http://localhost:8000";
+const REQUEST_TIMEOUT_MS = 15000;
+
+export class ApiClientError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ApiClientError";
+  }
+}
+
+function resolveApiBaseUrl(): string {
+  const configuredBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/$/, "");
+  }
+
+  if (typeof window === "undefined") {
+    return LOCAL_API_BASE_URL;
+  }
+
+  const { hostname, origin } = window.location;
+  const isLocalHost =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0";
+
+  return isLocalHost ? LOCAL_API_BASE_URL : origin;
+}
 
 export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(
+    () => controller.abort(),
+    REQUEST_TIMEOUT_MS,
+  );
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${resolveApiBaseUrl()}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    window.clearTimeout(timeout);
+
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiClientError(
+        "The backend took too long to respond. Confirm the API is reachable and try again.",
+      );
+    }
+
+    throw new ApiClientError(
+      "The backend is unavailable right now. Confirm NEXT_PUBLIC_API_BASE_URL or the deployed same-origin API route.",
+    );
+  }
+
+  window.clearTimeout(timeout);
 
   if (!response.ok) {
-    throw new Error("Chat request failed");
+    throw new ApiClientError(
+      `The backend returned ${response.status}. The project surface is reachable, but the orchestration API is not healthy.`,
+    );
   }
 
   const payload = (await response.json()) as Partial<ChatResponse>;
 
   if (typeof payload.response !== "string") {
-    throw new Error("Chat response payload is invalid");
+    throw new ApiClientError("The backend response payload is invalid.");
   }
 
   return {

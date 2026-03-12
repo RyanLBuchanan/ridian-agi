@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { InputBar } from "@/components/chat/input-bar";
 import { MessageList } from "@/components/chat/message-list";
-import { sendChat } from "@/lib/api-client";
+import { ApiClientError, sendChat } from "@/lib/api-client";
 import type { ChatExecutionMode, ChatMessage, ChatResponse } from "@/lib/types";
 
 const starterMessage: ChatMessage = {
   role: "assistant",
   content:
-    "Console ready. I can help frame a plan, inspect workspace context, route toward a specialist agent, and narrate the execution posture of each run.",
+    "Ridian Cortex is online, built on Ridian OS, and ready to route tasks through the orchestration spine.",
 };
 
 const starterPrompts = [
   "Map the current workspace architecture and call out the strongest demo points.",
   "Plan the next implementation pass and show the execution posture you would use.",
-  "Summarize what is real versus placeholder in Little Ridian AGI today.",
+  "Summarize what is production-ready versus placeholder in Ridian Cortex today.",
 ];
 
 function formatExecutionMode(mode: ChatExecutionMode | undefined): string {
@@ -32,13 +32,18 @@ function formatExecutionMode(mode: ChatExecutionMode | undefined): string {
 export function CommandSurface({
   latestRun,
   onRunUpdate,
+  onLoadingChange,
+  onRequestErrorChange,
 }: {
   latestRun: ChatResponse | null;
   onRunUpdate: (response: ChatResponse | null) => void;
+  onLoadingChange: (isLoading: boolean) => void;
+  onRequestErrorChange: (message: string | null) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([starterMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const submit = async () => {
     const trimmed = input.trim();
@@ -50,28 +55,38 @@ export function CommandSurface({
       ...prev,
       { role: "user", content: trimmed },
     ]);
+    setRequestError(null);
+    onRequestErrorChange(null);
     setInput("");
     setIsLoading(true);
+    onLoadingChange(true);
 
     try {
       const response = await sendChat({ message: trimmed });
       onRunUpdate(response);
+      onRequestErrorChange(null);
       setMessages((prev: ChatMessage[]) => [
         ...prev,
         { role: "assistant", content: response.response },
       ]);
-    } catch {
+    } catch (error) {
       onRunUpdate(null);
+      const message =
+        error instanceof ApiClientError
+          ? error.message
+          : "The backend is unavailable right now. Verify the deployed API target and try again.";
+      setRequestError(message);
+      onRequestErrorChange(message);
       setMessages((prev: ChatMessage[]) => [
         ...prev,
         {
           role: "assistant",
-          content:
-            "I could not reach the backend right now. Check API connectivity and try again.",
+          content: message,
         },
       ]);
     } finally {
       setIsLoading(false);
+      onLoadingChange(false);
     }
   };
 
@@ -85,7 +100,7 @@ export function CommandSurface({
             <p className="console-copy">
               Submit tasks in natural language, trigger the backend
               orchestrator, and inspect the resulting routing, plan, and trace
-              behavior without leaving the console.
+              behavior without leaving the Ridian OS project surface.
             </p>
           </div>
           <div className="console-badges">
@@ -93,7 +108,7 @@ export function CommandSurface({
               <span className="status-dot" />
               Task-linked execution
             </span>
-            <span className="status-pill">Console-first workflow</span>
+            <span className="status-pill">Built on Ridian OS</span>
           </div>
         </div>
         <div className="console-stats">
@@ -118,6 +133,17 @@ export function CommandSurface({
           </div>
         </div>
       </section>
+      {isLoading ? (
+        <div className="cortex-inline-state" aria-live="polite">
+          Routing task through the backend orchestrator and waiting for run
+          telemetry.
+        </div>
+      ) : null}
+      {requestError ? (
+        <div className="cortex-inline-state error" role="alert">
+          {requestError}
+        </div>
+      ) : null}
       <MessageList messages={messages} />
       <InputBar
         value={input}
@@ -213,7 +239,7 @@ export function CommandSurface({
               <p className="panel-copy text-sm muted">
                 The first command will activate the execution inspector, trace
                 telemetry, and plan visualization so the UI reads like a live
-                cognitive console.
+                cognitive console built on Ridian OS.
               </p>
             </div>
             <span className="pill">Ready</span>

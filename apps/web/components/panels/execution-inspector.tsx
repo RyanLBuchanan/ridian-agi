@@ -1,3 +1,4 @@
+import { AgentFlowVisualization } from "@/components/panels/agent-flow-visualization";
 import type {
   ChatExecutionMode,
   ChatPlanStep,
@@ -47,8 +48,12 @@ function inferSelectedModel(latestRun: ChatResponse | null): string {
 
 export function ExecutionInspector({
   latestRun,
+  isLoading,
+  requestError,
 }: {
   latestRun: ChatResponse | null;
+  isLoading: boolean;
+  requestError: string | null;
 }) {
   const planSteps = latestRun?.plan?.structuredSteps ?? [];
   const fallbackPlan = latestRun?.plan?.steps ?? [];
@@ -61,13 +66,19 @@ export function ExecutionInspector({
           <h2 className="cortex-sidebar-title">Run Telemetry</h2>
           <p className="cortex-sidebar-copy">
             Structured execution data from the FastAPI orchestrator is rendered
-            here after each submitted task.
+            here after each submitted task in the Ridian OS console surface.
           </p>
         </div>
         <span className="cortex-chip subdued">
           {latestRun?.runId ? latestRun.runId : "No run yet"}
         </span>
       </div>
+
+      <AgentFlowVisualization
+        latestRun={latestRun}
+        isLoading={isLoading}
+        requestError={requestError}
+      />
 
       <div className="cortex-inspector-grid">
         <div className="cortex-inspector-card">
