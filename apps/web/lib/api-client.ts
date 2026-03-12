@@ -25,6 +25,10 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
     runId: typeof payload.runId === "string" ? payload.runId : undefined,
     executionMode: payload.executionMode,
     selectedAgent: payload.selectedAgent ?? null,
+    selectedModel:
+      typeof payload.selectedModel === "string"
+        ? payload.selectedModel
+        : undefined,
     traceSummary:
       typeof payload.traceSummary === "string"
         ? payload.traceSummary

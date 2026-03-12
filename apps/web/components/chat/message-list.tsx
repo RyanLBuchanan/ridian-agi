@@ -3,7 +3,7 @@ import type { ChatMessage } from "@/lib/types";
 export function MessageList({ messages }: { messages: ChatMessage[] }) {
   return (
     <div className="card conversation-list">
-      <p className="section-title">Conversation</p>
+      <p className="section-title">Command Log</p>
       {messages.map((message, idx) => (
         <div
           key={`${message.role}-${idx}`}
@@ -11,10 +11,10 @@ export function MessageList({ messages }: { messages: ChatMessage[] }) {
         >
           <div className="message-meta">
             <div className="text-xs muted">
-              {message.role === "user" ? "You" : "Little Ridian AGI"}
+              {message.role === "user" ? "Operator" : "Ridian Cortex"}
             </div>
             <div className="text-xs muted">
-              {message.role === "user" ? "Request" : "Response"}
+              {message.role === "user" ? "Task" : "Response"}
             </div>
           </div>
           <div className="text-sm message-content">{message.content}</div>

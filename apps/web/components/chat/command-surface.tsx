@@ -76,27 +76,24 @@ export function CommandSurface({
   };
 
   return (
-    <div className="conversation-shell">
-      <section className="card orchestration-console">
+    <div className="conversation-shell cortex-command-shell">
+      <section className="card orchestration-console cortex-command-panel">
         <div className="console-header">
           <div>
-            <p className="section-title">Orchestration Console</p>
-            <h3 className="console-title">
-              Direct the workspace, then inspect how the system chose to
-              respond.
-            </h3>
+            <p className="section-title">Command Surface</p>
+            <h3 className="console-title">Ridian Cortex Command Interface</h3>
             <p className="console-copy">
-              The central surface keeps the conversation primary while exposing
-              the live execution posture, selected agent, and trace framing that
-              make the demo feel operational rather than chat-only.
+              Submit tasks in natural language, trigger the backend
+              orchestrator, and inspect the resulting routing, plan, and trace
+              behavior without leaving the console.
             </p>
           </div>
           <div className="console-badges">
             <span className="status-pill">
               <span className="status-dot" />
-              Traced response path
+              Task-linked execution
             </span>
-            <span className="status-pill">Warm, restrained UI</span>
+            <span className="status-pill">Console-first workflow</span>
           </div>
         </div>
         <div className="console-stats">
@@ -116,7 +113,7 @@ export function CommandSurface({
             <span className="stat-label">Run Summary</span>
             <span className="console-stat-value console-stat-copy">
               {latestRun?.traceSummary ??
-                "First run will surface orchestration notes here."}
+                "The first task will surface orchestration notes here."}
             </span>
           </div>
         </div>
@@ -130,13 +127,13 @@ export function CommandSurface({
         suggestions={starterPrompts}
       />
       {latestRun ? (
-        <div className="card meta-grid premium-meta-grid">
+        <div className="card meta-grid premium-meta-grid cortex-run-deck">
           <div className="panel-header">
             <div>
-              <p className="section-title">Run Deck</p>
+              <p className="section-title">Command Response</p>
               <p className="panel-copy text-sm muted">
-                The latest orchestration response is summarized here so a demo
-                audience can understand the system state at a glance.
+                The response text remains visible in the command lane while the
+                execution inspector renders the structured orchestration data.
               </p>
             </div>
             <span className="pill">
@@ -166,7 +163,7 @@ export function CommandSurface({
           {latestRun.plan?.structuredSteps &&
           latestRun.plan.structuredSteps.length > 0 ? (
             <div className="meta-card builder-plan-preview">
-              <p className="section-title">Builder Plan</p>
+              <p className="section-title">Plan Preview</p>
               <div className="panel-note premium-note">
                 {latestRun.plan.summary ??
                   "A planning sequence is attached to this run."}
@@ -191,7 +188,7 @@ export function CommandSurface({
               : "Trace metadata is not available for this response yet."}
           </div>
           <div className="meta-card">
-            <p className="section-title">Trace / Activity</p>
+            <p className="section-title">Trace Snapshot</p>
             {latestRun.trace && latestRun.trace.length > 0 ? (
               <ul className="trace-list">
                 {latestRun.trace.slice(0, 5).map((item: string) => (
@@ -209,14 +206,14 @@ export function CommandSurface({
           </div>
         </div>
       ) : (
-        <section className="card preflight-card">
+        <section className="card preflight-card cortex-preflight-card">
           <div className="panel-header">
             <div>
-              <p className="section-title">Demo Preflight</p>
+              <p className="section-title">Console Preflight</p>
               <p className="panel-copy text-sm muted">
-                The first command will activate the run deck, context rail, and
-                trace summary so the workspace reads like an orchestrated
-                system.
+                The first command will activate the execution inspector, trace
+                telemetry, and plan visualization so the UI reads like a live
+                cognitive console.
               </p>
             </div>
             <span className="pill">Ready</span>

@@ -15,18 +15,18 @@ export function InputBar({
     <div className="card command-card">
       <div className="command-toolbar">
         <div>
-          <p className="section-title">Command Surface</p>
+          <p className="section-title">Task Input</p>
           <div className="text-sm muted">
-            Ask directly, shape a plan, inspect context, or route toward a
-            specialist agent without leaving the orchestration console.
+            Type an objective, request a plan, or direct a builder-style task
+            into the Ridian Cortex orchestration layer.
           </div>
         </div>
-        <span className="pill">Single-turn demo flow</span>
+        <span className="pill">Backend Orchestrator</span>
       </div>
       <div className="row" style={{ alignItems: "stretch" }}>
         <input
           className="command-input"
-          placeholder="Ask, plan, or delegate work..."
+          placeholder="Describe the task you want the Cortex console to route..."
           value={value}
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
@@ -42,7 +42,7 @@ export function InputBar({
           disabled={disabled}
           onClick={onSubmit}
         >
-          {disabled ? "Working" : "Send"}
+          {disabled ? "Routing" : "Dispatch"}
         </button>
       </div>
       <div className="suggestion-row">

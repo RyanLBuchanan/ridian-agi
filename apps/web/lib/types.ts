@@ -34,6 +34,7 @@ export type ChatResponse = {
   runId?: string;
   executionMode?: ChatExecutionMode;
   selectedAgent?: string | null;
+  selectedModel?: string;
   traceSummary?: string;
   trace?: string[];
   plan?: ChatPlan | null;
