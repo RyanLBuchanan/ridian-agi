@@ -10,6 +10,13 @@ export function CortexConsole() {
   const [latestRun, setLatestRun] = useState<ChatResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const connectionLabel = requestError
+    ? "Orchestrator Unreachable"
+    : isLoading
+      ? "Orchestrator Link Active"
+      : latestRun?.runId
+        ? "Orchestrator Responding"
+        : "Orchestrator Ready";
 
   return (
     <main className="cortex-shell">
@@ -29,7 +36,7 @@ export function CortexConsole() {
         <div className="cortex-status-row">
           <span className="cortex-chip live">
             <span className="cortex-chip-dot" />
-            Orchestrator Link Ready
+            {connectionLabel}
           </span>
           <span className="cortex-chip">Built on Ridian OS</span>
           <span className="cortex-chip">Project Surface</span>

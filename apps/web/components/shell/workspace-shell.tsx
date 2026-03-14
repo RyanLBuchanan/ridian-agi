@@ -9,6 +9,8 @@ import type { ChatResponse } from "@/lib/types";
 
 export function WorkspaceShell() {
   const [latestRun, setLatestRun] = useState<ChatResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   return (
     <main className="app-shell">
@@ -23,10 +25,10 @@ export function WorkspaceShell() {
               memory.
             </h2>
             <p className="intro-copy">
-              Little Ridian AGI is designed as a restrained workspace-native
-              system: deliberate enough for internal demos, structured enough
-              for serious implementation, and calm enough to feel like a trusted
-              operating layer.
+              Ridian Cortex, built on Ridian OS, is designed as a restrained
+              workspace-native system: deliberate enough for internal demos,
+              structured enough for serious implementation, and calm enough to
+              feel like a trusted operating layer.
             </p>
             <div className="intro-highlights">
               <div className="highlight-chip">Visible execution posture</div>
@@ -53,7 +55,12 @@ export function WorkspaceShell() {
             <div className="stat-block">
               <span className="stat-label">Selected Agent</span>
               <span className="stat-value">
-                {latestRun?.selectedAgent ?? "Workspace Concierge"}
+                {requestError
+                  ? "Backend unavailable"
+                  : (latestRun?.selectedAgent ??
+                    (isLoading
+                      ? "Routing in progress"
+                      : "Workspace Concierge"))}
               </span>
             </div>
             <div className="stat-block">
@@ -66,7 +73,12 @@ export function WorkspaceShell() {
             </div>
           </section>
         </div>
-        <CommandSurface onRunUpdate={setLatestRun} latestRun={latestRun} />
+        <CommandSurface
+          onRunUpdate={setLatestRun}
+          latestRun={latestRun}
+          onLoadingChange={setIsLoading}
+          onRequestErrorChange={setRequestError}
+        />
       </section>
       <RightContextPanel latestRun={latestRun} />
     </main>

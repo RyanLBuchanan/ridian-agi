@@ -10,7 +10,7 @@ export class ApiClientError extends Error {
   }
 }
 
-function resolveApiBaseUrl(): string {
+function resolveApiBaseUrl(): string | null {
   const configuredBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (configuredBaseUrl) {
     return configuredBaseUrl.replace(/\/$/, "");
@@ -20,16 +20,23 @@ function resolveApiBaseUrl(): string {
     return LOCAL_API_BASE_URL;
   }
 
-  const { hostname, origin } = window.location;
+  const { hostname } = window.location;
   const isLocalHost =
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname === "0.0.0.0";
 
-  return isLocalHost ? LOCAL_API_BASE_URL : origin;
+  return isLocalHost ? LOCAL_API_BASE_URL : null;
 }
 
 export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
+  const apiBaseUrl = resolveApiBaseUrl();
+  if (!apiBaseUrl) {
+    throw new ApiClientError(
+      "Backend endpoint is not configured. Set NEXT_PUBLIC_API_BASE_URL to your deployed API origin.",
+    );
+  }
+
   const controller = new AbortController();
   const timeout = window.setTimeout(
     () => controller.abort(),
@@ -39,7 +46,7 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
   let response: Response;
 
   try {
-    response = await fetch(`${resolveApiBaseUrl()}/api/chat`, {
+    response = await fetch(`${apiBaseUrl}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
@@ -55,7 +62,7 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
     }
 
     throw new ApiClientError(
-      "The backend is unavailable right now. Confirm NEXT_PUBLIC_API_BASE_URL or the deployed same-origin API route.",
+      "The backend is unavailable right now. Confirm NEXT_PUBLIC_API_BASE_URL points to a reachable backend.",
     );
   }
 

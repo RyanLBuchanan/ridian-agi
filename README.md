@@ -1,6 +1,6 @@
 # Ridian Cortex
 
-Little Ridian AGI is the next evolution of Ridian OS: a workspace-native cognitive layer designed to be calm, trustworthy, and extensible.
+Ridian Cortex is a standalone cognitive console built on Ridian OS: a workspace-native AGI experiment designed to be calm, trustworthy, and extensible.
 
 ## Stack
 
@@ -44,6 +44,8 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+For deployment and environment details, see `apps/web/README.md`.
 
 ## MVP Scope Included
 

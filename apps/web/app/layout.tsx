@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Ridian Cortex | built on Ridian OS",
   description:
-    "Ridian Cortex is a cognitive console built on Ridian OS for orchestrated tasks, agent routing, execution traces, and internal project demos.",
+    "Ridian Cortex is a cognitive console built on Ridian OS for orchestrated tasks, agent routing, execution traces, and AGI experiment workflows.",
   applicationName: "Ridian Cortex",
   alternates: {
     canonical: appBasePath || "/",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ridian Cortex | built on Ridian OS",
     description:
-      "A standalone Ridian Technologies project surface for orchestration demos, execution inspection, and agent-aware task flow.",
+      "Ridian Cortex, built on Ridian OS, is a standalone cognitive console for orchestration demos, execution inspection, and agent-aware task flow.",
     url: appBasePath || "/",
     siteName: "Ridian Cortex",
     type: "website",
