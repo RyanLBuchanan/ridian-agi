@@ -31,6 +31,7 @@ Frontend: `http://localhost:3000`
 ## Netlify Deployment (apps/web only)
 
 Deploy this app as a standalone Next.js site with base directory `apps/web`.
+The authoritative Netlify config for the Cortex frontend is `apps/web/netlify.toml`.
 
 Recommended Netlify settings:
 
