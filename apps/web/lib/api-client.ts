@@ -10,6 +10,38 @@ export class ApiClientError extends Error {
   }
 }
 
+function resolveChatEndpoint(apiBaseUrl: string): string {
+  const normalizedBaseUrl = apiBaseUrl.replace(/\/$/, "");
+  return normalizedBaseUrl.endsWith("/api")
+    ? `${normalizedBaseUrl}/chat`
+    : `${normalizedBaseUrl}/api/chat`;
+}
+
+function formatNetworkError(error: unknown): string {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return "The backend took too long to respond. Confirm the API is reachable and try again.";
+  }
+
+  const detail = error instanceof Error && error.message ? ` (${error.message})` : "";
+  return `Unable to reach the backend endpoint${detail}. Confirm NEXT_PUBLIC_API_BASE_URL points to the API origin.`;
+}
+
+async function formatHttpError(response: Response): Promise<string> {
+  let detail = "";
+
+  try {
+    const payload = (await response.json()) as { detail?: unknown };
+    if (typeof payload.detail === "string") {
+      detail = payload.detail;
+    }
+  } catch {
+    // Ignore body parsing issues and fall back to status text.
+  }
+
+  const tail = detail || response.statusText || "Unknown backend error.";
+  return `Backend request failed with ${response.status}: ${tail}`;
+}
+
 function resolveApiBaseUrl(): string | null {
   const configuredBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (configuredBaseUrl) {
@@ -37,6 +69,8 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
     );
   }
 
+  const chatEndpoint = resolveChatEndpoint(apiBaseUrl);
+
   const controller = new AbortController();
   const timeout = window.setTimeout(
     () => controller.abort(),
@@ -46,7 +80,7 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
   let response: Response;
 
   try {
-    response = await fetch(`${apiBaseUrl}/api/chat`, {
+    response = await fetch(chatEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
@@ -54,24 +88,15 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
     });
   } catch (error) {
     window.clearTimeout(timeout);
-
-    if (error instanceof DOMException && error.name === "AbortError") {
-      throw new ApiClientError(
-        "The backend took too long to respond. Confirm the API is reachable and try again.",
-      );
-    }
-
     throw new ApiClientError(
-      "The backend is unavailable right now. Confirm NEXT_PUBLIC_API_BASE_URL points to a reachable backend.",
+      `${formatNetworkError(error)} Endpoint: ${chatEndpoint}`,
     );
   }
 
   window.clearTimeout(timeout);
 
   if (!response.ok) {
-    throw new ApiClientError(
-      `The backend returned ${response.status}. The project surface is reachable, but the orchestration API is not healthy.`,
-    );
+    throw new ApiClientError(await formatHttpError(response));
   }
 
   const payload = (await response.json()) as Partial<ChatResponse>;
