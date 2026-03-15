@@ -50,6 +50,10 @@ export function LeftNav() {
     <aside className="panel left">
       <div className="nav-section">
         <p className="section-title">Workspace Rail</p>
+        <div className="meta-list">
+          <span className="pill">Persistent Navigation</span>
+          <span className="pill">Ridian Cortex</span>
+        </div>
         {navSections.map((section) => (
           <div key={section.title} className="nav-section">
             <p className="nav-group-title">{section.title}</p>
