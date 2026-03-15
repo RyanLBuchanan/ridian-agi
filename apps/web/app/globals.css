@@ -181,6 +181,12 @@ a {
   gap: 16px;
 }
 
+.cortex-sidebar-panel {
+  background:
+    linear-gradient(180deg, rgba(7, 14, 28, 0.95), rgba(6, 12, 24, 0.9)),
+    var(--bg-elevated);
+}
+
 .cortex-center-column {
   display: grid;
   gap: 16px;
@@ -284,11 +290,17 @@ a {
   gap: 12px;
 }
 
+.cortex-sidebar-nav,
+.cortex-sidebar-status {
+  gap: 10px;
+}
+
 .cortex-nav-card {
-  border-radius: 18px;
-  padding: 14px;
-  border: 1px solid transparent;
-  background: rgba(8, 14, 30, 0.68);
+  border-radius: 14px;
+  padding: 10px 12px 10px 14px;
+  border: 0;
+  border-left: 2px solid rgba(92, 214, 227, 0.18);
+  background: rgba(8, 14, 30, 0.42);
   transition:
     transform 150ms ease,
     border-color 150ms ease,
@@ -296,11 +308,11 @@ a {
 }
 
 .cortex-nav-card.active {
-  border-color: var(--line-strong);
+  border-left-color: rgba(58, 215, 255, 0.75);
   background: linear-gradient(
     145deg,
-    rgba(14, 25, 52, 0.9),
-    rgba(10, 19, 40, 0.8)
+    rgba(14, 25, 52, 0.72),
+    rgba(10, 19, 40, 0.5)
   );
   transform: translateX(3px);
 }
@@ -366,6 +378,22 @@ a {
   padding: 14px;
   background: rgba(8, 14, 30, 0.8);
   border: 1px solid var(--line);
+}
+
+.cortex-sidebar-stat {
+  border: 0;
+  border-left: 2px solid rgba(92, 214, 227, 0.2);
+  border-radius: 12px;
+  background: rgba(8, 14, 30, 0.42);
+  padding: 10px 12px 10px 14px;
+}
+
+.cortex-nav-group-label {
+  margin: 0 0 2px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #6f87aa;
 }
 
 .cortex-chip,

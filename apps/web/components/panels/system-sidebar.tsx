@@ -102,6 +102,7 @@ export function SystemSidebar({
       </nav>
 
       <div className="cortex-sidebar-status">
+        <p className="cortex-nav-group-label">Live Status</p>
         <div className="cortex-sidebar-stat">
           <span className="stat-label">Execution Mode</span>
           <span className="cortex-sidebar-value">

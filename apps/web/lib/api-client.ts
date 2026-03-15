@@ -17,13 +17,13 @@ function resolveChatEndpoint(apiBaseUrl: string): string {
     : `${normalizedBaseUrl}/api/chat`;
 }
 
-function formatNetworkError(error: unknown): string {
+function formatNetworkError(error: unknown, endpoint: string): string {
   if (error instanceof DOMException && error.name === "AbortError") {
     return "The backend took too long to respond. Confirm the API is reachable and try again.";
   }
 
   const detail = error instanceof Error && error.message ? ` (${error.message})` : "";
-  return `Unable to reach the backend endpoint${detail}. Confirm NEXT_PUBLIC_API_BASE_URL points to the API origin.`;
+  return `Unable to reach the backend endpoint${detail}. This is commonly caused by CORS rejection or an unreachable API host. Confirm NEXT_PUBLIC_API_BASE_URL points to the API origin and that the API CORS allowlist includes your site origin. Endpoint: ${endpoint}`;
 }
 
 async function formatHttpError(response: Response): Promise<string> {
@@ -35,7 +35,14 @@ async function formatHttpError(response: Response): Promise<string> {
       detail = payload.detail;
     }
   } catch {
-    // Ignore body parsing issues and fall back to status text.
+    try {
+      const fallbackText = await response.text();
+      if (fallbackText.trim()) {
+        detail = fallbackText.trim();
+      }
+    } catch {
+      // Ignore body parsing issues and fall back to status text.
+    }
   }
 
   const tail = detail || response.statusText || "Unknown backend error.";
@@ -89,7 +96,7 @@ export async function sendChat(request: ChatRequest): Promise<ChatResponse> {
   } catch (error) {
     window.clearTimeout(timeout);
     throw new ApiClientError(
-      `${formatNetworkError(error)} Endpoint: ${chatEndpoint}`,
+      formatNetworkError(error, chatEndpoint),
     );
   }
 
