@@ -10,7 +10,10 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     api_prefix: str = "/api"
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "https://ridian-cortex.netlify.app",
+    ]
 
     openai_api_key: str = ""
     openai_model: str = "gpt-4.1-mini"
