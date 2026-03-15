@@ -37,7 +37,13 @@ Recommended Netlify settings:
 - Base directory: `apps/web`
 - Build command: `npm run build`
 - Publish directory: `.next`
+- Functions directory: leave blank
 - Node version: `20` (recommended)
+
+Notes:
+
+- In Netlify, `.next` must be relative to the base directory. Do not use `apps/web/.next` when the base directory is already `apps/web`.
+- Netlify will provision the required functions for SSR/App Router behavior automatically.
 
 Required Netlify environment variables:
 
