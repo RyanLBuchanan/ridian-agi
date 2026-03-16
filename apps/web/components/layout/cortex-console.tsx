@@ -44,7 +44,9 @@ export function CortexConsole() {
       </header>
 
       <div className="cortex-grid">
-        <SystemSidebar latestRun={latestRun} />
+        <section className="cortex-mobile-order cortex-mobile-secondary" aria-label="Console navigation and context rail">
+          <SystemSidebar latestRun={latestRun} />
+        </section>
 
         <section className="cortex-center-column">
           <section className="cortex-hero-panel">
@@ -86,11 +88,13 @@ export function CortexConsole() {
           />
         </section>
 
-        <ExecutionInspector
-          latestRun={latestRun}
-          isLoading={isLoading}
-          requestError={requestError}
-        />
+        <section className="cortex-mobile-order cortex-mobile-telemetry" aria-label="Execution telemetry and inspector panels">
+          <ExecutionInspector
+            latestRun={latestRun}
+            isLoading={isLoading}
+            requestError={requestError}
+          />
+        </section>
       </div>
     </main>
   );

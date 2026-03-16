@@ -101,15 +101,15 @@ export function ExecutionInspector({
         </div>
       </div>
 
-      <section className="cortex-detail-block">
-        <div className="cortex-detail-header">
+      <details className="cortex-detail-block" open>
+        <summary className="cortex-accordion-summary">
           <p className="section-title">Step Plan</p>
           <span className="cortex-chip subdued">
             {planSteps.length > 0 || fallbackPlan.length > 0
               ? "Visualized"
               : "Pending"}
           </span>
-        </div>
+        </summary>
         {planSteps.length > 0 ? (
           <ol className="cortex-plan-list">
             {planSteps.map((step, index) => (
@@ -144,17 +144,17 @@ export function ExecutionInspector({
             orchestrator.
           </div>
         )}
-      </section>
+      </details>
 
-      <section className="cortex-detail-block">
-        <div className="cortex-detail-header">
+      <details className="cortex-detail-block" open>
+        <summary className="cortex-accordion-summary">
           <p className="section-title">Trace Output</p>
           <span className="cortex-chip subdued">
             {latestRun?.trace?.length
               ? `${latestRun.trace.length} events`
               : "Idle"}
           </span>
-        </div>
+        </summary>
         {latestRun?.trace && latestRun.trace.length > 0 ? (
           <ul className="cortex-trace-list">
             {latestRun.trace.map((item, index) => (
@@ -170,7 +170,7 @@ export function ExecutionInspector({
             successful backend response.
           </div>
         )}
-      </section>
+      </details>
 
       <section className="cortex-detail-block emphasis">
         <p className="section-title">Trace Summary</p>
