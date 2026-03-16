@@ -57,6 +57,7 @@ body {
     linear-gradient(180deg, #050816 0%, #071022 48%, #04070f 100%);
   font-family: "Bahnschrift", "Segoe UI", "Trebuchet MS", sans-serif;
   letter-spacing: 0.01em;
+  overflow-x: hidden;
 }
 
 button,
@@ -73,6 +74,8 @@ a {
   padding: 20px;
   display: grid;
   gap: 18px;
+  width: 100%;
+  overflow-x: clip;
 }
 
 .cortex-topbar {
@@ -104,6 +107,7 @@ a {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0;
 }
 
 .cortex-brand-mark {
@@ -145,6 +149,7 @@ a {
   font-size: 0.94rem;
   line-height: 1.6;
   color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 
 .cortex-status-row {
@@ -159,6 +164,11 @@ a {
   grid-template-columns: 280px minmax(0, 1fr) 360px;
   gap: 18px;
   min-height: 0;
+  align-items: start;
+}
+
+.cortex-mobile-order {
+  min-width: 0;
 }
 
 .cortex-sidebar-panel,
@@ -179,6 +189,7 @@ a {
   display: grid;
   align-content: start;
   gap: 16px;
+  min-width: 0;
 }
 
 .cortex-sidebar-panel {
@@ -213,6 +224,7 @@ a {
   font-size: clamp(1.7rem, 3vw, 2.7rem);
   line-height: 1.04;
   color: var(--text-strong);
+  text-wrap: balance;
 }
 
 .cortex-hero-metrics,
@@ -237,6 +249,7 @@ a {
   border-radius: 16px;
   background: rgba(13, 24, 48, 0.78);
   border: 1px solid rgba(92, 214, 227, 0.12);
+  min-width: 0;
 }
 
 .cortex-metric-value,
@@ -305,6 +318,7 @@ a {
     transform 150ms ease,
     border-color 150ms ease,
     background 150ms ease;
+  min-width: 0;
 }
 
 .cortex-nav-card.active {
@@ -355,6 +369,7 @@ a {
 .text-sm,
 .message-content {
   color: var(--text-strong);
+  overflow-wrap: anywhere;
 }
 
 .cortex-nav-copy,
@@ -378,6 +393,29 @@ a {
   padding: 14px;
   background: rgba(8, 14, 30, 0.8);
   border: 1px solid var(--line);
+  min-width: 0;
+}
+
+.cortex-accordion-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.cortex-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.cortex-nav-group {
+  display: grid;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 10px;
+  border: 1px solid rgba(92, 214, 227, 0.12);
+  background: rgba(8, 14, 30, 0.36);
 }
 
 .cortex-sidebar-stat {
@@ -485,6 +523,12 @@ a {
   max-width: 62ch;
 }
 
+.console-title,
+.header-title,
+.cortex-sidebar-title {
+  text-wrap: balance;
+}
+
 .conversation-list {
   min-height: 300px;
 }
@@ -496,6 +540,10 @@ a {
 
 .message-card.assistant {
   background: rgba(9, 17, 36, 0.88);
+}
+
+.message-content {
+  line-height: 1.6;
 }
 
 .command-card {
@@ -589,6 +637,8 @@ a {
   border: 1px solid rgba(92, 214, 227, 0.1);
   background: rgba(13, 22, 44, 0.78);
   padding: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .cortex-plan-item.simple {
@@ -799,6 +849,7 @@ a {
   gap: 10px;
   align-items: flex-start;
   color: var(--text-main);
+  min-width: 0;
 }
 
 .cortex-trace-bullet {
@@ -943,6 +994,14 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .cortex-mobile-telemetry {
+    order: 4;
+  }
+
+  .cortex-mobile-secondary {
+    order: 5;
+  }
+
   .cortex-sidebar-panel,
   .cortex-inspector-panel,
   .cortex-center-column {
@@ -961,6 +1020,11 @@ a {
 @media (max-width: 780px) {
   .cortex-shell {
     padding: 12px;
+    gap: 14px;
+  }
+
+  .cortex-topbar {
+    align-items: flex-start;
   }
 
   .cortex-topbar,
@@ -985,13 +1049,75 @@ a {
     flex-direction: column;
   }
 
+  .cortex-title {
+    font-size: clamp(1.3rem, 7vw, 1.7rem);
+  }
+
+  .cortex-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .cortex-brand-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .cortex-status-row {
+    justify-content: flex-start;
+  }
+
+  .cortex-hero-panel {
+    gap: 14px;
+  }
+
+  .cortex-hero-title {
+    max-width: none;
+    font-size: clamp(1.35rem, 6.7vw, 1.9rem);
+  }
+
+  .command-toolbar .pill,
+  .panel-header .pill,
+  .console-header .status-pill {
+    align-self: flex-start;
+  }
+
   .row {
     flex-direction: column;
     align-items: stretch;
   }
 
+  .command-input {
+    min-height: 48px;
+  }
+
   .primary-btn {
     min-height: 50px;
+    width: 100%;
+  }
+
+  .suggestion-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion-chip {
+    text-align: left;
+    width: 100%;
+  }
+
+  .conversation-list {
+    min-height: 220px;
+  }
+
+  .cortex-inspector-panel,
+  .cortex-sidebar-panel {
+    gap: 12px;
+  }
+
+  .cortex-detail-block > :not(summary) {
+    margin-top: 10px;
   }
 
   .cortex-plan-topline {
@@ -1014,6 +1140,10 @@ a {
 
   .cortex-flow-card-topline {
     flex-wrap: wrap;
+  }
+
+  .cortex-grid {
+    gap: 14px;
   }
 }
 

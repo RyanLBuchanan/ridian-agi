@@ -81,8 +81,11 @@ export function SystemSidebar({
 
       <nav className="cortex-sidebar-nav" aria-label="System navigation">
         {navGroups.map((group) => (
-          <div key={group.group} className="cortex-nav-group">
-            <p className="nav-group-title">{group.group}</p>
+          <details key={group.group} className="cortex-nav-group" open>
+            <summary className="cortex-accordion-summary">
+              <p className="nav-group-title">{group.group}</p>
+              <span className="cortex-chip subdued">{group.items.length} nodes</span>
+            </summary>
             <div className="cortex-nav-group-list">
               {group.items.map((section, index) => (
                 <div
@@ -97,7 +100,7 @@ export function SystemSidebar({
                 </div>
               ))}
             </div>
-          </div>
+          </details>
         ))}
       </nav>
 
