@@ -22,12 +22,20 @@ class OpenAIProvider(BaseModelProvider):
                 ),
             )
 
-        response = self._client.responses.create(
+        response = self._client.chat.completions.create(
             model=settings.openai_model,
-            input=request.prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": request.prompt,
+                }
+            ],
         )
+        first_choice = response.choices[0] if response.choices else None
+        first_message = first_choice.message if first_choice else None
+        response_text = first_message.content.strip() if first_message and first_message.content else "No output produced."
         return ModelResult(
             provider_name="openai",
             model_name=settings.openai_model,
-            text=response.output_text.strip() or "No output produced.",
+            text=response_text,
         )
