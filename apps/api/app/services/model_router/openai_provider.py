@@ -22,6 +22,8 @@ class OpenAIProvider(BaseModelProvider):
                 ),
             )
 
+        # NOTE: The repository pins openai==1.44.0, where text generation is exposed via
+        # chat.completions (not the newer responses API).
         response = self._client.chat.completions.create(
             model=settings.openai_model,
             messages=[
@@ -33,7 +35,11 @@ class OpenAIProvider(BaseModelProvider):
         )
         first_choice = response.choices[0] if response.choices else None
         first_message = first_choice.message if first_choice else None
-        response_text = first_message.content.strip() if first_message and first_message.content else "No output produced."
+        message_content = first_message.content if first_message else None
+        if isinstance(message_content, str):
+            response_text = message_content.strip() or "No output produced."
+        else:
+            response_text = "No output produced."
         return ModelResult(
             provider_name="openai",
             model_name=settings.openai_model,
