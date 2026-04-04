@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piper GenUI</title>
+    <link rel="stylesheet" href="genui.css" />
+  </head>
+  <body>
+    <div id="genui-root">
+      <div id="genui-input">
+        <div class="input-header">
+          <h1 class="genui-title">Piper GenUI</h1>
+          <p class="genui-subtitle">
+            Generated learning surfaces from natural-language intent
+          </p>
+        </div>
+
+        <form id="genui-form" autocomplete="off">
+          <div class="input-row">
+            <input
+              type="text"
+              id="genui-prompt"
+              placeholder="Describe what you need help with…"
+              aria-label="Prompt"
+              required
+            />
+            <button type="submit" id="genui-submit">Generate</button>
+          </div>
+        </form>
+
+        <div id="genui-chips" class="chip-row">
+          <button class="chip" data-prompt="I don't understand fractions">
+            I don't understand fractions
+          </button>
+          <button
+            class="chip"
+            data-prompt="Why does multiplying by 1/2 make a number smaller?"
+          >
+            Why does multiplying by ½ make a number smaller?
+          </button>
+          <button
+            class="chip"
+            data-prompt="Help me understand triangle congruence"
+          >
+            Help me understand triangle congruence
+          </button>
+          <button class="chip" data-prompt="I missed class, can we start over?">
+            I missed class, can we start over?
+          </button>
+          <button
+            class="chip"
+            data-prompt="My students keep confusing numerator and denominator"
+          >
+            My students keep confusing numerator and denominator
+          </button>
+        </div>
+      </div>
+
+      <div id="genui-surface"></div>
+    </div>
+
+    <script src="genui.js"></script>
+  </body>
+</html>

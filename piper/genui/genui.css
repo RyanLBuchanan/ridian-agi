@@ -1,0 +1,553 @@
+/* =========================================================
+   Piper GenUI — Stylesheet
+   ========================================================= */
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --cream: #faf6f1;
+  --cream-dark: #f0e9df;
+  --rose: #d4a0a0;
+  --rose-light: #f0d4d4;
+  --rose-accent: #c07878;
+  --slate: #3b4252;
+  --denim: #4c566a;
+  --denim-light: #6b7a8d;
+  --white: #ffffff;
+  --border: #e0d6cc;
+  --shadow: rgba(59, 66, 82, 0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--cream);
+  color: var(--slate);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* --- Root layout --- */
+#genui-root {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* --- Input Region (persistent) --- */
+#genui-input {
+  margin-bottom: 2.5rem;
+}
+
+.input-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.genui-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--slate);
+  letter-spacing: -0.02em;
+}
+
+.genui-subtitle {
+  font-size: 0.95rem;
+  color: var(--denim-light);
+  margin-top: 0.35rem;
+  font-weight: 400;
+}
+
+/* --- Form --- */
+#genui-form {
+  width: 100%;
+}
+
+.input-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+#genui-prompt {
+  flex: 1;
+  padding: 0.85rem 1.15rem;
+  font-size: 1rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--slate);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#genui-prompt:focus {
+  border-color: var(--rose-accent);
+}
+
+#genui-prompt::placeholder {
+  color: var(--denim-light);
+  opacity: 0.7;
+}
+
+#genui-submit {
+  padding: 0.85rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--rose-accent);
+  color: var(--white);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+  white-space: nowrap;
+}
+
+#genui-submit:hover {
+  background: #a96060;
+}
+
+#genui-submit:active {
+  transform: scale(0.97);
+}
+
+/* --- Chips --- */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.chip {
+  padding: 0.45rem 0.95rem;
+  font-size: 0.82rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--denim);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.chip:hover {
+  background: var(--rose-light);
+  border-color: var(--rose);
+}
+
+/* --- Surface Region --- */
+#genui-surface {
+  animation: surfaceFadeIn 0.35s ease;
+}
+
+@keyframes surfaceFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Shared Surface Styles --- */
+.surface-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.surface-heading {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--slate);
+  margin-bottom: 0.75rem;
+}
+
+.surface-piper-response {
+  font-size: 0.95rem;
+  color: var(--denim);
+  line-height: 1.65;
+  padding: 1.15rem 1.35rem;
+  background: var(--cream-dark);
+  border-left: 3px solid var(--rose);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 1.25rem;
+}
+
+.surface-prompt-text {
+  font-size: 0.95rem;
+  color: var(--denim);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.surface-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--slate);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.surface-input:focus {
+  border-color: var(--rose-accent);
+}
+
+/* --- Toggle Button Group --- */
+.toggle-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.toggle-btn {
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--denim);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.toggle-btn:hover {
+  border-color: var(--rose);
+}
+
+.toggle-btn.active {
+  background: var(--rose-accent);
+  color: var(--white);
+  border-color: var(--rose-accent);
+}
+
+/* ============================
+   FRACTIONS SURFACE
+   ============================ */
+
+.fraction-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.fraction-bar {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  height: 56px;
+  border: 2px solid var(--denim-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.fraction-segment {
+  flex: 1;
+  border-right: 1px solid var(--denim-light);
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--denim-light);
+  user-select: none;
+}
+
+.fraction-segment:last-child {
+  border-right: none;
+}
+
+.fraction-segment:hover {
+  background: var(--rose-light);
+}
+
+.fraction-segment.selected {
+  background: var(--rose-accent);
+  color: var(--white);
+}
+
+.fraction-controls {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.fraction-divide-btn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--denim);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.fraction-divide-btn:hover {
+  background: var(--cream-dark);
+  border-color: var(--rose);
+}
+
+.fraction-divide-btn.active {
+  background: var(--rose-accent);
+  color: var(--white);
+  border-color: var(--rose-accent);
+}
+
+/* --- Area model --- */
+.area-model {
+  display: grid;
+  width: 200px;
+  height: 200px;
+  border: 2px solid var(--denim-light);
+  border-radius: var(--radius-sm);
+}
+
+.area-cell {
+  border: 1px solid var(--denim-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.area-cell:hover {
+  background: var(--rose-light);
+}
+
+.area-cell.selected {
+  background: var(--rose-accent);
+}
+
+/* --- Number line --- */
+.number-line-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem 0;
+}
+
+.number-line-container svg {
+  width: 100%;
+  height: 80px;
+}
+
+/* ============================
+   GEOMETRY SURFACE
+   ============================ */
+
+.geometry-canvas-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.geometry-canvas-wrap svg {
+  max-width: 100%;
+  cursor: default;
+}
+
+.geo-point {
+  cursor: grab;
+  transition: r 0.15s;
+}
+
+.geo-point:hover {
+  r: 8;
+}
+
+.geo-point.dragging {
+  cursor: grabbing;
+}
+
+.geo-side {
+  stroke: var(--denim-light);
+  stroke-width: 2;
+  transition:
+    stroke 0.15s,
+    stroke-width 0.15s;
+}
+
+.geo-side.highlight {
+  stroke: var(--rose-accent);
+  stroke-width: 3;
+}
+
+.geo-label {
+  font-size: 13px;
+  fill: var(--denim);
+  font-family: var(--font);
+  pointer-events: none;
+}
+
+/* ============================
+   MISSED CLASS SURFACE
+   ============================ */
+
+.launch-task-card {
+  background: var(--cream-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.35rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.launch-task-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--slate);
+  margin-bottom: 0.5rem;
+}
+
+.launch-task-card p {
+  font-size: 0.9rem;
+  color: var(--denim);
+}
+
+.notice-wonder {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.nw-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem;
+}
+
+.nw-box h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--rose-accent);
+  margin-bottom: 0.5rem;
+}
+
+.reveal-btn {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: 1.5px solid var(--rose-accent);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--rose-accent);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  margin-bottom: 1.25rem;
+}
+
+.reveal-btn:hover {
+  background: var(--rose-accent);
+  color: var(--white);
+}
+
+.hidden-summary {
+  display: none;
+}
+
+.hidden-summary.visible {
+  display: block;
+  animation: surfaceFadeIn 0.3s ease;
+}
+
+/* ============================
+   TEACHER SURFACE
+   ============================ */
+
+.teacher-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.teacher-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem;
+}
+
+.teacher-card h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--rose-accent);
+  margin-bottom: 0.45rem;
+}
+
+.teacher-card p {
+  font-size: 0.9rem;
+  color: var(--denim);
+  line-height: 1.55;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  #genui-root {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .genui-title {
+    font-size: 1.5rem;
+  }
+
+  .input-row {
+    flex-direction: column;
+  }
+
+  .notice-wonder,
+  .teacher-cards {
+    grid-template-columns: 1fr;
+  }
+}
